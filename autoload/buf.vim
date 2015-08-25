@@ -1,4 +1,4 @@
-function buffingwheel#cmd(c)
+function buf#cmd(c)
   if &modified && !&hidden
     if confirm('This buffer has been modified.  Save?', "Yes\nNo") == 1
       update
