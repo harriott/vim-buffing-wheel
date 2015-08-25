@@ -1,4 +1,7 @@
-fu buf#cmd(c)
+no<silent> <space> :<c-u>cal <sid>buf('bn')<cr>
+no<silent> <bs>    :<c-u>cal <sid>buf('bp')<cr>
+no<silent> X       :<c-u>cal <sid>buf('bd')<cr>
+fu! s:buf(c) " c is a command to be executed before printing the list of buffers
   if &mod && !&hid
     if confirm('This buffer has been modified. Save?',"Yes\nNo")==1
       up | redr
@@ -7,11 +10,10 @@ fu buf#cmd(c)
     en
   en
   exe 'sil '.a:c
-  " Echo a one-line summary of where the current buffer is among other buffers
   let b=filter(range(1,bufnr('$')),'bufexists(v:val)&&buflisted(v:val)') " buffer numbers
   let i=index(b,bufnr('%'))                                   " current buffer
   let a=map(copy(b),'fnamemodify(bufname(v:val),":t")')       " buffer names
-  cal map(a,'empty(v:val) ? "*" : v:val')
+  cal map(a,'v:val ? "*" : v:val')
   cal map(a,'getbufvar(b[v:key],"&mod") ? v:val."+" : v:val')
   if i==-1 | enew | cal add(a,'*') | let i=len(a)-1 | en      " if zero buffers are listed, create a blank one
   let p='buf: '                                               " prefix
