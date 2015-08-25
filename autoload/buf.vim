@@ -1,64 +1,32 @@
-function buf#cmd(c)
-  if &modified && !&hidden
-    if confirm('This buffer has been modified.  Save?', "Yes\nNo") == 1
-      update
-      redraw
-    else
-      redraw
-      echohl ErrorMsg | echo 'Aborted.' | echohl None
-      return
-    endif
-  endif
-
-  exec 'silent ' . a:c
-
+fu buf#cmd(c)
+  if &mod && !&hid
+    if confirm('This buffer has been modified. Save?',"Yes\nNo")==1
+      up | redr
+    el
+      redr | echoh errormsg | ec 'Aborted.' | echoh none | retu
+    en
+  en
+  exe 'sil '.a:c
   " Echo a one-line summary of where the current buffer is among other buffers
-  let names = [] " short names of buffers
-  let curIndex = -1 " where is the current buffer in the list of ``names''
-  let curBufNr = bufnr('%')
-  let lastBufNr = bufnr('$')
-  let i = 1
-  while i <= lastBufNr
-    if bufexists(i) && buflisted(i)
-      if i == curBufNr
-        let curIndex = len(names)
-      endif
-
-      let name = fnamemodify(bufname(i), ':t')
-      if empty(name)
-        let name = '*'
-      endif
-      if getbufvar(i, '&modified')
-        let name .= '+'
-      endif
-
-      call add(names, name)
-    endif
-    let i += 1
-  endwhile
-
-  if curIndex == -1
-    " zero buffers listed, create a blank one
-    exe "enew"
-    call add(names, '*')
-    let curIndex = len(names) - 1
-  endif
-
-  let sLabel = 'Buffers: '
-  let sLeft = (curIndex == 0) ? '' : (join(names[:(curIndex - 1)], ' ') . ' ')
-  let sMid = '[' . names[curIndex] . ']'
-  let sRight = (curIndex == len(names) - 1) ? '' : (' ' . join(names[(curIndex + 1):]))
-
-  let limit = &columns - 12 - len(sLabel) - len(sMid)
-  if len(sLeft) + len(sRight) > limit
-    if len(sRight) < limit / 2
-      let sLeft = '...' . sLeft[-(limit - len(sRight) - 3):]
-    elseif len(sLeft) < limit / 2
-      let sRight = sRight[:(limit - len(sLeft) - 4)] . '...'
-    else
-      let sLeft = '...' . sLeft[-((limit / 2) - 3):]
-      let sRight = sRight[:((limit / 2) - 4)] . '...'
-    endif
-  endif
-  echohl MoreMsg | echo sLabel . sLeft . sMid . sRight | echohl None
-endfunction
+  let b=filter(range(1,bufnr('$')),'bufexists(v:val)&&buflisted(v:val)') " buffer numbers
+  let i=index(b,bufnr('%'))                                   " current buffer
+  let a=map(copy(b),'fnamemodify(bufname(v:val),":t")')       " buffer names
+  cal map(a,'empty(v:val) ? "*" : v:val')
+  cal map(a,'getbufvar(b[v:key],"&mod") ? v:val."+" : v:val')
+  if i==-1 | enew | cal add(a,'*') | let i=len(a)-1 | en      " if zero buffers are listed, create a blank one
+  let p='buf: '                                               " prefix
+  let l=i?join(a[:(i-1)],' ').' ':''                          " left string
+  let m='['.a[i].']'                                          " middle string
+  let r=i==len(a)-1?'':' '.join(a[i+1:])                      " right string
+  let n=&co-12-len(p)-len(m)                                  " limit
+  if len(l)+len(r)>n
+    if len(r)<n/2
+      let l='...'.l[len(r)-n+3):]
+    elseif len(l)<n/2
+      let r=r[:(n-len(l)-4)].'...'
+    el
+      let [l,r]=['...'.l[3-n/2:],r[:n/2-4].'...']
+    en
+  en
+  echoh moremsg | echo p.l.m.r | echoh none
+endf
