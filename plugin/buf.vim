@@ -1,5 +1,5 @@
-no<silent> - :<c-u>cal <sid>buf('bn')<cr>
-no<silent> + :<c-u>cal <sid>buf('bp')<cr>
+no<silent> - :<c-u>cal <sid>buf('bp')<cr>
+no<silent> + :<c-u>cal <sid>buf('bn')<cr>
 no<silent> X :<c-u>cal <sid>buf('bd')<cr>
 fu! s:buf(c) " c is a command to be executed before printing the list of buffers
   if &mod && !&hid
