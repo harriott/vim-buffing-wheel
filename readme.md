@@ -1,4 +1,4 @@
-Modified from <https://github.com/ngn/vim-buf>, with thanks.
+Modified from <https://github.com/vrillusions/vim-buffing-wheel>, with thanks.
 
 These are among my most used normal mode commands:
 - `-` and `+` switch buffers, like `:bprevious` and `:bnext`.
